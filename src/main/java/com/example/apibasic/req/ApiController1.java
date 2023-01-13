@@ -6,8 +6,6 @@ import org.springframework.stereotype.*;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import java.net.http.HttpHeaders;
-import java.util.Enumeration;
 
 @Controller     // 클라이언트가 보낸 요청을 받을 수 있음
 @ResponseBody
