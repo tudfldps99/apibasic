@@ -36,7 +36,8 @@ public class PostRepository {       /* 주방장 */
     // Map 의 특성 때문) 존재하지 않는 키면 키 등록이 됨, 기존에 존재하는 키 값이면 수정이 됨
     public boolean save(PostEntity postEntity) {
         PostEntity post = posts.put(postEntity.getPostNo(), postEntity);
-        return post != null;            // null 이 아니면 잘 들어온 것
+        //return post != null;            // null 이 아니면 잘 들어온 것
+        return true;
     }
 
     // 게시물 삭제

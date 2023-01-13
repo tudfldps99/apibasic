@@ -1,6 +1,7 @@
 // 2023-01-13
 package com.example.apibasic.post.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -19,6 +20,7 @@ public class PostEntity {
     private String title;       // 제목
     private String content;     // 내용
     private List<String> hashTags;      // 해시태그 목록
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createDate;   // 작성 시간
     private LocalDateTime modifyDate;   // 수정 시간
 }
