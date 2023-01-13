@@ -9,6 +9,14 @@
 server:
   port: 8181
 
+logging:
+  level:
+    root: info
+    com:
+      example:
+        apibasic:
+          req: trace
+
 #spring:
 #  datasource:
 #    url: xxx
