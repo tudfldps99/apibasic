@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 // 게시물 데이터를 CRUD (생성, 조회, 수정, 삭제)
 //@Component      // 이 클래스로 만든 객체는 스프링이 관리좀 해줘라 (객체의 생성/유지/사망/해제 등)
@@ -17,6 +18,7 @@ public class PostRepository {       /* 주방장 */
 
     // 게시물 목록 조회
     public List<PostEntity> findAll() {
+        /*
         List<PostEntity> postEntityList = new ArrayList<>();
 
         Set<Long> keySet = posts.keySet();      // 키 값만 다 뽑아서 줌
@@ -25,6 +27,12 @@ public class PostRepository {       /* 주방장 */
             postEntityList.add(postEntity);
         }
         return postEntityList;
+         */
+
+        // stream 표현
+        return posts.keySet().stream()
+                .map(posts::get)
+                .collect(Collectors.toList());
     }
 
     // 게시물 개별 조회
@@ -32,7 +40,7 @@ public class PostRepository {       /* 주방장 */
         return posts.get(postNo);
     }
 
-    // 게시물 등록, 게시물 수정 (잘 등록했는지 안했는지만 확인)
+    // 게시물 등록, 수정 (잘 등록했는지 안했는지만 확인)
     // Map 의 특성 때문) 존재하지 않는 키면 키 등록이 됨, 기존에 존재하는 키 값이면 수정이 됨
     public boolean save(PostEntity postEntity) {
         PostEntity post = posts.put(postEntity.getPostNo(), postEntity);
