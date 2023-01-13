@@ -1,3 +1,4 @@
+// 2023-01-13
 package com.example.apibasic.res;
 
 import com.example.apibasic.req.ApiController2;
@@ -68,7 +69,7 @@ public class ApiController3 {
         private LocalDate hireDate;
     }
 
-    // 응답시에 응답 헤더정보와 응답 상태코드를 조작하려면 ResponseEntity 객체 사용
+    // 응답시에 응답 헤더정보와 응답 상태코드를 조작하려면 [[ ResponseEntity ]] 객체 사용
     @GetMapping("/res4")
     public ResponseEntity<?> res4(String nick) {        // return type [[ ResponseEntity ]] 으로 고정
         if (nick == null || nick.equals("")) {
@@ -81,6 +82,7 @@ public class ApiController3 {
                 .deptName("영업부")
                 .hireDate(LocalDate.of(2019, 12, 11))
                 .build();
+
 //        return ResponseEntity
 //                .ok()
 //                .body(employee);
