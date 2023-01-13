@@ -1,10 +1,7 @@
 // 2023-01-13
 package com.example.apibasic.post.api;
 
-import com.example.apibasic.post.dto.PostCreateDTO;
-import com.example.apibasic.post.dto.PostResponseDTO;
-import com.example.apibasic.post.dto.PostResponseOneDTO;
-import com.example.apibasic.post.dto.PostUpdateDTO;
+import com.example.apibasic.post.dto.*;
 import com.example.apibasic.post.entity.PostEntity;
 import com.example.apibasic.post.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
@@ -76,9 +73,15 @@ public class PostApiController {        /* 서빙 직원 */
                 .map(PostResponseDTO::new)
                 .collect(Collectors.toList());
 
+        // count 확인
+        PostListResponseDTO listResponseDTO = PostListResponseDTO.builder()
+                .count(responseDTOList.size())
+                .posts(responseDTOList)
+                .build();
+
         return ResponseEntity
                 .ok()
-                .body(responseDTOList);
+                .body(listResponseDTO);
     }
 
     // 게시물 개별 조회 - 클라이언트에게 추가로 수정시간 정보를 제공
