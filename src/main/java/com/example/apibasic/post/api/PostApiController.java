@@ -1,6 +1,8 @@
 // 2023-01-13
 package com.example.apibasic.post.api;
 
+import com.example.apibasic.post.dto.PostCreateDTO;
+import com.example.apibasic.post.dto.PostResponseDTO;
 import com.example.apibasic.post.entity.PostEntity;
 import com.example.apibasic.post.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
@@ -10,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 // resource : 게시물 (Post)
 /*
@@ -44,6 +47,7 @@ public class PostApiController {        /* 서빙 직원 */
     /* 주방장이 계속 바뀔 가능성이 있음 */
 
     // 게시물 목록 조회
+    /*
     @GetMapping
     public ResponseEntity<?> list() {
         log.info("/posts GET request");
@@ -53,6 +57,23 @@ public class PostApiController {        /* 서빙 직원 */
         return ResponseEntity
                 .ok()
                 .body(list);
+    }
+     */ // '글번호 필요없고, modifyDate 필요없고, createDate 를 regDate로 바꿔서 연/월/일 만 주세요' 와 같이 클라이언트의 요구사항대로 조회되려면?
+        // 즉, 클라이언트가 달라는 정보만 주기 --> dto 이용 (PostResponseDTO.java)
+    @GetMapping
+    public ResponseEntity<?> list() {
+        log.info("/posts GET request");
+
+        List<PostEntity> list = postRepository.findAll();
+
+        // 엔터티 리스트를 DTO 리스트로 변환해서 클라이언트에 응답 --> PostResponseDTO.java 에서 처리
+        List<PostResponseDTO> responseDTOList = list.stream()
+                .map(PostResponseDTO::new)
+                .collect(Collectors.toList());
+
+        return ResponseEntity
+                .ok()
+                .body(responseDTOList);
     }
 
     // 게시물 개별 조회
@@ -70,12 +91,27 @@ public class PostApiController {        /* 서빙 직원 */
     }
 
     // 게시물 등록
+    /*
     @PostMapping
     public ResponseEntity<?> create(@RequestBody PostEntity entity) {
         log.info("/posts POST request");
         log.info("게시물 정보: {}", entity);
 
         boolean flag = postRepository.save(entity);
+        return flag
+                ? ResponseEntity.ok().body("INSERT-SUCCESS")
+                : ResponseEntity.badRequest().body("INSERT_FAIL");
+    }
+    */  // --> entity 에는 너무 많은 정보가 있음. 받을 정보만 받기 --> dto 이용 (PostCreateDTO.java)
+    @PostMapping
+    public ResponseEntity<?> create(@RequestBody PostCreateDTO createDTO) {     // -> 1) DTO 로 받아왔지만, (data 4개)
+        log.info("/posts POST request");
+        log.info("게시물 정보: {}", createDTO);
+
+        // dto 를 entity 로 변환하는 작업 필요 (글번호, 작성 시간 자동 생성)
+        PostEntity entity = createDTO.toEntity();
+
+        boolean flag = postRepository.save(entity);     // -> 2) entity 로 보내야 함 (data 6개)
         return flag
                 ? ResponseEntity.ok().body("INSERT-SUCCESS")
                 : ResponseEntity.badRequest().body("INSERT_FAIL");

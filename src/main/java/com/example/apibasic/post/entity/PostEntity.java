@@ -1,6 +1,7 @@
 // 2023-01-13
 package com.example.apibasic.post.entity;
 
+import com.example.apibasic.post.dto.PostResponseDTO;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
 
@@ -14,6 +15,8 @@ import java.util.List;
 @EqualsAndHashCode
 @Builder
 public class PostEntity {
+
+    public static long sequence = 1L;   // 연속된 일련번호 (초기값 : 1)
 
     private Long postNo;        // 게시물 식별번호
     private String writer;      // 작성자
