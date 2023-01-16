@@ -15,6 +15,8 @@ import java.util.List;
 @EqualsAndHashCode
 @Builder
 public class PostEntity {
+    // dto : 요청, 응답 할 때 데이터 담는 그릇 (필요한 데이터만)
+    // entity : DB Access 할 때 데이터 담는 그릇 (모든 데이터)
 
     public static long sequence = 1L;   // 연속된 일련번호 (초기값 : 1)
 
