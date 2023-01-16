@@ -5,6 +5,8 @@ import com.example.apibasic.post.dto.*;
 import com.example.apibasic.post.entity.PostEntity;
 import com.example.apibasic.post.repository.PostRepository;
 import com.example.apibasic.post.service.PostService;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Parameters;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -157,6 +159,10 @@ public class PostApiController {        /* 서빙 직원 */
                 : ResponseEntity.badRequest().body("INSERT_FAIL");
     }
     */  // --> entity 에는 너무 많은 정보가 있음. 받을 정보만 받기 --> dto 이용 (PostCreateDTO.java)
+    @Parameters({       // http://localhost:8181/swagger-ui/index.html#/post-api-controller/create 에 표현됨
+            @Parameter(name = "작성자", description = "게시물 작성자를 입력", example = "김철수")
+            , @Parameter(name = "내용", description = "글 내용을 입력", example = "하하하")
+    })
     @PostMapping
     public ResponseEntity<?> create(
             @Validated @RequestBody PostCreateDTO createDTO  // -> 1) DTO 로 받아왔지만, (data 4개)

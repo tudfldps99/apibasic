@@ -26,8 +26,13 @@ dependencies {
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 
-	// 입력값 검증 라이브러리
+	// https://mvnrepository.com/ 참고
+	// 입력값 검증 라이브러리 -> boot 는 특정 버전이 필요한게 아니라면, 버전정보 지워도 됨
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+	// swagger api 문서화
+	implementation 'org.springdoc:springdoc-openapi-ui:1.6.9'
+
 }
 
 tasks.named('test') {
