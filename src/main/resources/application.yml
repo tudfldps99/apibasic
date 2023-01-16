@@ -16,6 +16,8 @@ logging:
       example:
         apibasic:
           req: trace
+    org:
+      hibernate: info
 
 # 2023-01-16
 #swagger
@@ -31,12 +33,16 @@ spring:
     password: mariadb
   #jpa config
   jpa:
-    database: mysql   # 실제사용할 dbms 지정
-    database-platform: org.hibernate.dialect.MariaDB106Dialect    # 방언 설정
-    show-sql: true    # 실행되는 SQL 문 로그를 볼 것인지
-    generate-ddl: true    # 각 DBMS 에 맞는 고유 기능을 사용할 지의 여부
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.MariaDB106Dialect # 방언 설정
+    show-sql: true      # 실행되는 SQL문 로그를 볼 것인지
     hibernate:
-      ddl-auto: create    # DDL 문을 처리할 때 설정
+      database: mysql     # 실제사용할 dbms 지정
+      generate-ddl: true  # 각 DBMS에 맞는 고유 기능을 사용할 지의 여부
+      ddl-auto: create    # DDL문을 처리할 때 설정
+
 
 # create : 매 실행마다 DDL 을 재실행
 # update : 매 실행마다 바뀐 부분의 DDL 을 ALTER 문으로 수정
