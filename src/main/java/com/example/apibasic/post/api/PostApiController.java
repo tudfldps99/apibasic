@@ -4,6 +4,7 @@ package com.example.apibasic.post.api;
 import com.example.apibasic.post.dto.*;
 import com.example.apibasic.post.entity.PostEntity;
 import com.example.apibasic.post.repository.PostRepository;
+import com.example.apibasic.post.service.PostService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,8 +32,11 @@ public class PostApiController {        /* 서빙 직원 */
     // PostRepository 에게 의존하는 관계 -> 100개 클래스가 의존하고 있다면, 주방장 변경 시 100개 클래스 모두 수정해야 함
     // --> 주방장이 바뀌든 말든 서빙 직원은 신경 X : 제어의 역전
     // 1. 필드 주입, 2. 생성자 주입
-    private final PostRepository postRepository;      // 제어의 역전         // final 넣으면 완전한 불변성 상태
+    //private final PostRepository postRepository;      // 제어의 역전         // final 넣으면 완전한 불변성 상태
     //  private final PostRepository postRepository = new PostRepository()    -> new PostRepository() 를 Spring 에서 생성자를 통해 넣어줌
+
+    // 2023-01-16) controller 는 이제 service 에 의존하는 관계
+    private final PostService postService;      // service 에 스프링빈 등록 필요
 
 /*
     @Autowired     // 스프링 컨테이너에게 의존객체를 자동주입해 달라
@@ -66,22 +70,36 @@ public class PostApiController {        /* 서빙 직원 */
     public ResponseEntity<?> list() {
         log.info("/posts GET request");
 
-        List<PostEntity> list = postRepository.findAll();
+        //List<PostEntity> list = postRepository.findAll();
+        try {       // ctrl + alt + t
+            PostListResponseDTO listResponseDTO = postService.getList();
 
-        // 엔터티 리스트를 DTO 리스트로 변환해서 클라이언트에 응답 --> PostResponseDTO.java 에서 처리
-        List<PostResponseDTO> responseDTOList = list.stream()
-                .map(PostResponseDTO::new)
-                .collect(Collectors.toList());
+            // 엔터티 리스트를 DTO 리스트로 변환해서 클라이언트에 응답 --> PostResponseDTO.java 에서 처리
+            // 2023-01-16
+            // 변환작업(중간 처리)을 왜 내(Controller)가 하는지?
+            // Controller : 요청, 응답 처리 -/> [Service : 전후 처리, 예외 처리] -/> Persistence : 데이터 접근(Data access) -/> Database(DBMS)
 
-        // count 확인
-        PostListResponseDTO listResponseDTO = PostListResponseDTO.builder()
-                .count(responseDTOList.size())
-                .posts(responseDTOList)
-                .build();
+            // --> service/PostService.java 로 옮김
+            /*
+            List<PostResponseDTO> responseDTOList = list.stream()
+                    .map(PostResponseDTO::new)
+                    .collect(Collectors.toList());
 
-        return ResponseEntity
-                .ok()
-                .body(listResponseDTO);
+            // count 확인
+            PostListResponseDTO listResponseDTO = PostListResponseDTO.builder()
+                    .count(responseDTOList.size())
+                    .posts(responseDTOList)
+                    .build();
+            */
+
+            return ResponseEntity
+                    .ok()
+                    .body(listResponseDTO);
+        } catch (Exception e) {
+            return ResponseEntity
+                    .notFound()     //.noContent() 도 가능
+                    .build();
+        }
     }
 
     // 게시물 개별 조회 - 클라이언트에게 추가로 수정시간 정보를 제공
@@ -103,13 +121,24 @@ public class PostApiController {        /* 서빙 직원 */
     public ResponseEntity<?> detail(@PathVariable Long postNo) {
         log.info("/posts/{} GET request", postNo);
 
+        /*
         PostEntity post = postRepository.findOne(postNo);
 
         // dto 이용 (PostResponseOneDTO)
         PostResponseOneDTO postResponseOneDTO = new PostResponseOneDTO(post);
-        return ResponseEntity
-                .ok()
-                .body(postResponseOneDTO);
+        */
+
+        try {
+            PostResponseOneDTO postResponseOneDTO = postService.getDetail(postNo);
+
+            return ResponseEntity
+                    .ok()
+                    .body(postResponseOneDTO);
+        } catch (Exception e) {
+            return ResponseEntity
+                    .notFound()
+                    .build();
+        }
     }
 
     // 게시물 등록
@@ -130,10 +159,15 @@ public class PostApiController {        /* 서빙 직원 */
         log.info("/posts POST request");
         log.info("게시물 정보: {}", createDTO);
 
+        /*
         // dto 를 entity 로 변환하는 작업 필요 (글번호, 작성 시간 자동 생성)
         PostEntity entity = createDTO.toEntity();
 
         boolean flag = postRepository.save(entity);     // -> 2) entity 로 보내야 함 (data 6개)
+        */
+
+        boolean flag = postService.insert(createDTO);
+
         return flag
                 ? ResponseEntity.ok().body("INSERT-SUCCESS")
                 : ResponseEntity.badRequest().body("INSERT_FAIL");
@@ -152,6 +186,7 @@ public class PostApiController {        /* 서빙 직원 */
         log.info("/posts/{} PATCH request", postNo);
         log.info("수정할 정보: {}", updateDTO);
 
+        /*
         // 수정 전 데이터 조회하기
         PostEntity entity = postRepository.findOne(postNo);
 
@@ -164,6 +199,10 @@ public class PostApiController {        /* 서빙 직원 */
         entity.setModifyDate(LocalDateTime.now());
 
         boolean flag = postRepository.save(entity);
+         */
+
+        boolean flag = postService.update(postNo, updateDTO);
+
         return flag
                 ? ResponseEntity.ok().body("UPDATE-SUCCESS")
                 : ResponseEntity.badRequest().body("UPDATE_FAIL");
@@ -174,7 +213,12 @@ public class PostApiController {        /* 서빙 직원 */
     public ResponseEntity<?> remove(@PathVariable Long postNo) {
         log.info("/posts/{} DELETE request", postNo);
 
+        /*
         boolean flag = postRepository.delete(postNo);
+         */
+
+        boolean flag = postService.delete(postNo);
+
         return flag
                 ? ResponseEntity.ok().body("DELETE-SUCCESS")
                 : ResponseEntity.badRequest().body("DELETE_FAIL");
