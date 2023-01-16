@@ -3,7 +3,7 @@ package com.example.apibasic.post.dto;
 
 import com.example.apibasic.post.entity.PostEntity;
 import lombok.*;
-
+import javax.validation.constraints.*;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -14,8 +14,17 @@ import java.util.List;
 @EqualsAndHashCode
 @Builder
 public class PostCreateDTO {    // DTO 가 검증처리도 해줌
-
+    // 2023-01-16) validation : 요청받은 DTO 에서 사용 --> Controller 에서 @Validated 추가 해줘야 함
+    /*
+        NotNull : null 값일 경우 에러 발생
+        NotEmpty : 빈문자열일 경우 에러 발생
+        NotBlank : null 이거나 빈문자열일 경우 에러 발생
+     */
+    @NotBlank
+    @Size(min = 2, max = 5)     // 글자 수는 2~5자 사이
     private String writer;
+    @NotBlank
+    @Min(1) @Max(20)            // 글자 수는 1~20자 사이
     private String title;
     private String content;
     private List<String> hashTags;

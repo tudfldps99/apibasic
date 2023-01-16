@@ -9,6 +9,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -155,7 +158,19 @@ public class PostApiController {        /* 서빙 직원 */
     }
     */  // --> entity 에는 너무 많은 정보가 있음. 받을 정보만 받기 --> dto 이용 (PostCreateDTO.java)
     @PostMapping
-    public ResponseEntity<?> create(@RequestBody PostCreateDTO createDTO) {     // -> 1) DTO 로 받아왔지만, (data 4개)
+    public ResponseEntity<?> create(
+            @Validated @RequestBody PostCreateDTO createDTO  // -> 1) DTO 로 받아왔지만, (data 4개)
+            , BindingResult result                          // 2023-01-16) 검증 에러 정보를 갖고 있는 객체
+    ) {
+        if (result.hasErrors()) { // 검증에러가 발생할 시 true 리턴
+            List<FieldError> fieldErrors = result.getFieldErrors();
+            fieldErrors.forEach(err -> {
+                log.warn("invalidated client data - {}", err.toString());
+            });
+            return ResponseEntity
+                    .badRequest()
+                    .body(fieldErrors);
+        }
         log.info("/posts POST request");
         log.info("게시물 정보: {}", createDTO);
 
@@ -182,7 +197,7 @@ public class PostApiController {        /* 서빙 직원 */
     }
      */
     @PatchMapping("/{postNo}")
-    public ResponseEntity<?> modify(@PathVariable Long postNo, @RequestBody PostUpdateDTO updateDTO) {
+    public ResponseEntity<?> modify(@PathVariable Long postNo, @Validated @RequestBody PostUpdateDTO updateDTO) {
         log.info("/posts/{} PATCH request", postNo);
         log.info("수정할 정보: {}", updateDTO);
 
