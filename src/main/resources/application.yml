@@ -17,12 +17,15 @@ logging:
         apibasic:
           req: trace
 
+# 2023-01-16
+#swagger
 springdoc:
   swagger-ui:
     path: /myapi.html
 
-#spring:
-#  datasource:
-#    url: xxx
-#    username: xxx
-#    password: xxx
+#database connection
+spring:
+  datasource:
+    url: jdbc:mariadb://localhost:3306/demodb
+    username: root
+    password: mariadb
