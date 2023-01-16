@@ -12,6 +12,8 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(of="userId")
+@Builder
+
 // JPA
 @Entity     // JPA 의 Entity 객체
 @Table(name="tbl_member")      // 테이블 명 변경 (default : 클래스 이름으로 - member_entity)

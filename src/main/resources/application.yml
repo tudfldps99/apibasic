@@ -44,6 +44,6 @@ spring:
       ddl-auto: create    # DDL문을 처리할 때 설정
 
 
-# create : 매 실행마다 DDL 을 재실행
+# create : 매 실행마다 DDL 을 재실행 (drop -> create)
 # update : 매 실행마다 바뀐 부분의 DDL 을 ALTER 문으로 수정
 # none : DDL 을 실행하지 않음 - 운영서버에서는 none 으로 둔다.
