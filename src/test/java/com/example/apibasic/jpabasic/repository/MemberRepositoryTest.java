@@ -114,6 +114,7 @@ class MemberRepositoryTest {
                 .gender(MALE)
                 .build();
         */
+
         // when
         /*
         memberRepository.save(saveMember1);
@@ -166,15 +167,26 @@ class MemberRepositoryTest {
         Gender newGender = FEMALE;
 
         // when
-        // JPA 에서 수정은 조회 후 setter 로 변경
+        // JPA 에서 수정은 조회 후 setter 로 변경 후 다시 save
         Optional<MemberEntity> foundMember = memberRepository.findById(userCode);
-        foundMember.ifPresent(m -> {         // ifPresent : 데이터가 만약 존재하면
+
+        /*
+        if (foundMember.isPresent()) {
+            MemberEntity m = foundMember.get();
             m.setNickName(newNickName);
             m.setGender(newGender);
-        });
+            memberRepository.save(m);
+        }
+        */
 
+        foundMember.ifPresent(m -> {         // ifPresent : 데이터가 만약 존재하면  ( isPresent 를 if 문으로 검사한 것 (173~178)
+            m.setNickName(newNickName);
+            m.setGender(newGender);
+            memberRepository.save(m);
+        });
         // 수정 후 조회
         Optional<MemberEntity> modifiedMember = memberRepository.findById(userCode);
+
         // then
         assertEquals("닭강정", modifiedMember.get().getNickName());
         assertEquals(FEMALE, modifiedMember.get().getGender());

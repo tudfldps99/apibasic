@@ -24,11 +24,12 @@ public class PostResponseDTO {
 
     // 엔터티를 DTO 로 변환하는 생성자
     public PostResponseDTO(PostEntity entity) {
+        // 2023-01-17) JPA 연결하면서 생긴 오류 주석 처리
         this.author = entity.getWriter();
         this.content = entity.getContent();
         this.title = entity.getTitle();
         this.regDate = entity.getCreateDate();
-        this.hashTags = entity.getHashTags();
+        //this.hashTags = entity.getHashTags();
     }
 
 }

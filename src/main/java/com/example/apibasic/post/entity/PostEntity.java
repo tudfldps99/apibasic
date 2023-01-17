@@ -1,31 +1,39 @@
-// 2023-01-13
+// 2023-01-16
 package com.example.apibasic.post.entity;
 
-import com.example.apibasic.post.dto.PostResponseDTO;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
+import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.List;
 
-// 게시물의 데이터 자바빈즈
 @Setter @Getter @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode
+@EqualsAndHashCode(of="postNo")
 @Builder
-public class PostEntity {
-    // dto : 요청, 응답 할 때 데이터 담는 그릇 (필요한 데이터만)
-    // entity : DB Access 할 때 데이터 담는 그릇 (모든 데이터)
 
-    public static long sequence = 1L;   // 연속된 일련번호 (초기값 : 1)
+@Entity     // 테이블 생성
+@Table(name = "tbl_post")       // 테이블 명 변경
+public class PostEntity {       // Entity 에서 validation 하지 말기. validation 은 DTO 에서.
+    @Id         // NOT NULL, Unique
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long postNo;        // 게시물 식별번호     --> DB 에는 post_no로 저장됨
 
-    private Long postNo;        // 게시물 식별번호
+    @Column(nullable = false)
     private String writer;      // 작성자
+
+    @Column(nullable = false)
     private String title;       // 제목
+
     private String content;     // 내용
-    private List<String> hashTags;      // 해시태그 목록
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime createDate;   // 작성 시간
-    private LocalDateTime modifyDate;   // 수정 시간
+
+//    private List<String> hashTags;      // 해시태그 목록
+
+    @CreationTimestamp
+    private LocalDateTime createDate;   // 작성 시간        --> INSERT
+
+    @UpdateTimestamp
+    private LocalDateTime modifyDate;   // 수정 시간        --> INSERT, UPDATE
 }

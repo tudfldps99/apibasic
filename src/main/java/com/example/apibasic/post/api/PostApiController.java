@@ -2,23 +2,18 @@
 package com.example.apibasic.post.api;
 
 import com.example.apibasic.post.dto.*;
-import com.example.apibasic.post.entity.PostEntity;
-import com.example.apibasic.post.repository.PostRepository;
 import com.example.apibasic.post.service.PostService;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
 
 // resource : 게시물 (Post)
 /*
@@ -168,6 +163,12 @@ public class PostApiController {        /* 서빙 직원 */
             @Validated @RequestBody PostCreateDTO createDTO  // -> 1) DTO 로 받아왔지만, (data 4개)
             , BindingResult result                          // 2023-01-16) 검증 에러 정보를 갖고 있는 객체
     ) {
+        if (createDTO == null) {        // -> DTO 에 null 이 들어오게 한건 [클라이언트 잘못]
+            return ResponseEntity
+                    .badRequest()
+                    .body("게시물 정보를 전달해주세요");
+        }
+
         if (result.hasErrors()) { // 검증에러가 발생할 시 true 리턴
             List<FieldError> fieldErrors = result.getFieldErrors();
             fieldErrors.forEach(err -> {
@@ -187,11 +188,25 @@ public class PostApiController {        /* 서빙 직원 */
         boolean flag = postRepository.save(entity);     // -> 2) entity 로 보내야 함 (data 6개)
         */
 
+    /*
         boolean flag = postService.insert(createDTO);
 
         return flag
                 ? ResponseEntity.ok().body("INSERT-SUCCESS")
                 : ResponseEntity.badRequest().body("INSERT_FAIL");
+    */
+        // 2023-01-17) JPA 연결하면서 생긴 오류 해결
+        try {
+            PostResponseOneDTO responseOneDTO = postService.insert(createDTO);
+            return ResponseEntity
+                    .ok()
+                    .body(responseOneDTO);
+        } catch (RuntimeException e) {      // -> insert 하다가 예외처리 된건 [서버 잘못]
+            log.error("insert fail : caused by - {}", e.getMessage());
+            return ResponseEntity
+                    .internalServerError()
+                    .body(e.getMessage());
+        }
     }
 
     // 게시물 수정 - 제목, 내용만 수정 가능, 수정시간은 현재시간으로 자동 수정
@@ -222,11 +237,26 @@ public class PostApiController {        /* 서빙 직원 */
         boolean flag = postRepository.save(entity);
          */
 
+    /*
         boolean flag = postService.update(postNo, updateDTO);
 
         return flag
                 ? ResponseEntity.ok().body("UPDATE-SUCCESS")
                 : ResponseEntity.badRequest().body("UPDATE_FAIL");
+    */
+
+        // 2023-01-17) JPA 연결하면서 생긴 오류 해결
+        try {
+            PostResponseOneDTO responseOneDTO = postService.update(postNo, updateDTO);
+            return ResponseEntity
+                    .ok()
+                    .body(responseOneDTO);
+        } catch (RuntimeException e) {      // -> update 하다가 예외처리 된건 [서버 잘못]
+            log.error("update fail : caused by - {}", e.getMessage());
+            return ResponseEntity
+                    .internalServerError()
+                    .body(e.getMessage());
+        }
     }
 
     // 게시물 삭제
@@ -238,10 +268,24 @@ public class PostApiController {        /* 서빙 직원 */
         boolean flag = postRepository.delete(postNo);
          */
 
+    /*
         boolean flag = postService.delete(postNo);
 
         return flag
                 ? ResponseEntity.ok().body("DELETE-SUCCESS")
                 : ResponseEntity.badRequest().body("DELETE_FAIL");
+     */
+        // 2023-01-17) JPA 연결하면서 생긴 오류 해결
+        try {
+            postService.delete(postNo);
+            return ResponseEntity
+                    .ok()
+                    .body("Delete Success");
+        } catch (RuntimeException e) {      // -> delete 하다가 예외처리 된건 [서버 잘못]
+            log.error("delete fail : caused by - {}", e.getMessage());
+            return ResponseEntity
+                    .internalServerError()
+                    .body(e.getMessage());
+        }
     }
 }

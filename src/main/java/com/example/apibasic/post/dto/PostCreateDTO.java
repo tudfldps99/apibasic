@@ -3,8 +3,9 @@ package com.example.apibasic.post.dto;
 
 import com.example.apibasic.post.entity.PostEntity;
 import lombok.*;
-import javax.validation.constraints.*;
-import java.time.LocalDateTime;
+
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 import java.util.List;
 
 // 게시물 쓸 때 필요한 정보들만
@@ -24,20 +25,21 @@ public class PostCreateDTO {    // DTO 가 검증처리도 해줌
     @Size(min = 2, max = 5)     // 글자 수는 2~5자 사이
     private String writer;
     @NotBlank
-    @Min(1) @Max(20)            // 글자 수는 1~20자 사이
+    @Size(min = 1, max = 20)          // 글자 수는 1~20자 사이
     private String title;
     private String content;
     private List<String> hashTags;
 
     // PostEntity 로 변환하는 유틸 메서드
     public PostEntity toEntity() {
+        // 2023-01-17) JPA 연결하면서 생긴 오류 주석 처리
         return PostEntity.builder()
-                .postNo(PostEntity.sequence++)       // postNo 숫자 증가는 PostEntity.java 에서 처리 (sequence)
+                //.postNo(PostEntity_old.sequence++)       // postNo 숫자 증가는 PostEntity.java 에서 처리 (sequence)
                 .writer(this.writer)                 // this.OOO : client 에서 받아온 값 그대로
                 .content(this.content)
                 .title(this.title)
-                .hashTags(this.hashTags)
-                .createDate(LocalDateTime.now())
+                //.hashTags(this.hashTags)
+                //.createDate(LocalDateTime.now())
                 .build();
     }
 }
