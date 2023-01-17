@@ -2,6 +2,7 @@
 package com.example.apibasic.post.repository;
 
 import com.example.apibasic.post.dto.PageRequestDTO;
+import com.example.apibasic.post.dto.PageResponseDTO;
 import com.example.apibasic.post.entity.PostEntity;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -46,7 +47,7 @@ class PageTest {
                 .build();
 
         PageRequest pageInfo = PageRequest.of(
-                dto.getPage() - 1,
+                dto.getPage() - 1,          // PageRequest.of(0, 10) : 1페이지 10개(1~10), PageRequest.of(1, 10) : 2페이지 10개 (11~20)
                 dto.getSizePerPage(),
                 Sort.Direction.DESC,            // 내림차 정렬
                 "createDate"        // 정렬 기준 필드
@@ -74,7 +75,7 @@ class PageTest {
         // given
         String title = "3";
         PageRequest pageRequest = PageRequest.of(
-                0,
+                3,
                 10,
                 Sort.Direction.DESC,
                 "createDate");
@@ -86,10 +87,13 @@ class PageTest {
 
         boolean next = postEntityPage.hasNext();
         boolean prev = postEntityPage.hasPrevious();        // false : 1페이지 이전은 없기 때문
-
         System.out.println("next = " + next);
         System.out.println("prev = " + prev);
 
         content.forEach(System.out::println);
+
+        // 페이지 정보
+        PageResponseDTO<PostEntity> dto = new PageResponseDTO<PostEntity>((Page<PostEntity>) postEntityPage);
+        System.out.println("dto = " + dto);
     }
 }
