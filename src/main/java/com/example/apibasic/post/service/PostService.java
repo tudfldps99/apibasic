@@ -22,6 +22,7 @@ public class PostService {
     // service 가 repository 에 의존
     private final PostRepository postRepository;        // IoC (제어의 역전)
 
+//--------------------------------------
     // 목록 조회 중간처리
     public PostListResponseDTO getList() {          // throws(던지다) RuntimeException  : RuntimeException 이 발생하면 호출한 클래스로 던짐
         List<PostEntity> list = postRepository.findAll();
@@ -42,6 +43,7 @@ public class PostService {
         return listResponseDTO;
     }
 
+//--------------------------------------
     // 개별 조회 중간처리
     public PostResponseOneDTO getDetail(Long postNo) {
     /*
@@ -64,6 +66,7 @@ public class PostService {
         return new PostResponseOneDTO(post);
     }
 
+//--------------------------------------
     // 등록 중간처리
 /*
     public boolean insert(final PostCreateDTO createDTO) {     // final : DB로 넘어가기 전에 DTO 가 변경되는 것을 방지할 수 있음
@@ -90,13 +93,14 @@ public class PostService {
         return new PostResponseOneDTO(savedPost);
     }
 
+//--------------------------------------
     // 수정 중간처리
 /*
     public boolean update(final Long postNo, PostUpdateDTO updateDTO) {
         // 수정 전 데이터 조회하기
         final PostEntity entity = postRepository.findOne(postNo);
 
-        // 수정 진행
+        // 수정 진행 (제목과 내용만 수정 가능)
         String modTitle = updateDTO.getTitle();
         String modContent = updateDTO.getContent();
 
@@ -116,7 +120,7 @@ public class PostService {
                 .findById(postNo)
                 .orElseThrow(() -> new RuntimeException("수정 전 데이터가 존재하지 않습니다."));
 
-        // 수정 진행
+        // 수정 진행 (제목과 내용만 수정 가능)
         String modTitle = updateDTO.getTitle();
         String modContent = updateDTO.getContent();
 
@@ -129,6 +133,7 @@ public class PostService {
         return new PostResponseOneDTO(modifiedPost);
     }
 
+//----------------------------------------------
 /*
     public boolean delete(final Long postNo) {
         return postRepository.delete(postNo);

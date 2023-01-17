@@ -52,6 +52,7 @@ public class PostApiController {        /* 서빙 직원 */
     // setter 는 내가 원하면 아무때나 반복호출 가능 but 불변성을 유지해야 함
     /* 주방장이 계속 바뀔 가능성이 있음 */
 
+//--------------------------------------
     // 게시물 목록 조회
     /*
     @GetMapping
@@ -102,6 +103,7 @@ public class PostApiController {        /* 서빙 직원 */
         }
     }
 
+//--------------------------------------
     // 게시물 개별 조회 - 클라이언트에게 추가로 수정시간 정보를 제공
     /*
     @GetMapping("/{postNo}")
@@ -141,6 +143,7 @@ public class PostApiController {        /* 서빙 직원 */
         }
     }
 
+//--------------------------------------
     // 게시물 등록
     /*
     @PostMapping
@@ -209,6 +212,7 @@ public class PostApiController {        /* 서빙 직원 */
         }
     }
 
+ //--------------------------------------
     // 게시물 수정 - 제목, 내용만 수정 가능, 수정시간은 현재시간으로 자동 수정
     /*
     @PatchMapping("/{postNo}")
@@ -259,6 +263,7 @@ public class PostApiController {        /* 서빙 직원 */
         }
     }
 
+//--------------------------------------
     // 게시물 삭제
     @DeleteMapping("/{postNo}")
     public ResponseEntity<?> remove(@PathVariable Long postNo) {
