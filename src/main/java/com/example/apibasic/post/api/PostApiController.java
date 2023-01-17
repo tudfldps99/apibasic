@@ -68,8 +68,9 @@ public class PostApiController {        /* 서빙 직원 */
      */ // '글번호 필요없고, modifyDate 필요없고, createDate 를 regDate로 바꿔서 연/월/일 만 주세요' 와 같이 클라이언트의 요구사항대로 조회되려면?
         // 즉, 클라이언트가 달라는 정보만 주기 --> dto 이용 (PostResponseDTO.java)
     @GetMapping
-    public ResponseEntity<?> list() {
+    public ResponseEntity<?> list( PageRequestDTO pageRequestDTO ) {        // 2023-01-17 ) PageRequestDTO 추가
         log.info("/posts GET request");
+        log.info("request page info - {}", pageRequestDTO);
 
         //List<PostEntity> list = postRepository.findAll();
         try {       // ctrl + alt + t
