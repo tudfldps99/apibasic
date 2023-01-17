@@ -305,4 +305,18 @@ class MemberRepositoryTest {
             assertTrue(m.getNickName().contains("박"));
         });
     }
+
+    @Test
+    @DisplayName("JPQL 을 사용해서 이름에 '박바보'인 회원을 삭제해야 한다.")
+    void jpqlTest4() {
+        // given
+        String nickName = "박바보";
+
+        // when
+        memberRepository.deleteByNickName(nickName);
+
+        // then
+        List<MemberEntity> list =  memberRepository.findAll();
+        list.forEach(System.out::println);
+    }
 }
