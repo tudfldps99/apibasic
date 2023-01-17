@@ -6,6 +6,10 @@ import com.example.apibasic.post.entity.PostEntity;
 import com.example.apibasic.post.repository.PostRepository;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -24,12 +28,24 @@ public class PostService {
 
 //--------------------------------------
     // 목록 조회 중간처리
-    public PostListResponseDTO getList() {          // throws(던지다) RuntimeException  : RuntimeException 이 발생하면 호출한 클래스로 던짐
-        List<PostEntity> list = postRepository.findAll();
+    public PostListResponseDTO getList(PageRequestDTO pageRequestDTO) {          // throws(던지다) RuntimeException  : RuntimeException 이 발생하면 호출한 클래스로 던짐
+
+        // getList 에 파라미터 pageRequestDTO 추가하기 위해 수정
+        Pageable pageable = PageRequest.of(
+                pageRequestDTO.getPage() - 1,
+                pageRequestDTO.getSizePerPage(),
+                Sort.Direction.DESC,
+                "createDate"
+        );
+
+//        List<PostEntity> list = postRepository.findAll();
+        final Page<PostEntity> pageData = postRepository.findAll(pageable);
+        List<PostEntity> list = pageData.getContent();
 
         if (list.isEmpty()) {       // 예외처리
             throw new RuntimeException("조회 결과가 없습니다");      // throw(유발하다, 일어나다) new RuntimeException : 밑의 코드를 진행시키지 않기 위해 강제로 에러를 발생시킴
         }
+
         // 엔터티 리스트를 DTO 리스트로 변환해서 클라이언트에 응답
         List<PostResponseDTO> responseDTOList = list.stream()
                 .map(PostResponseDTO::new)
@@ -37,6 +53,7 @@ public class PostService {
 
         PostListResponseDTO listResponseDTO = PostListResponseDTO.builder()
                 .count(responseDTOList.size())
+                .pageInfo(new PageResponseDTO(pageData))
                 .posts(responseDTOList)
                 .build();
 

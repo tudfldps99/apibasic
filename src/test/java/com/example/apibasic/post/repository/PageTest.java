@@ -24,7 +24,7 @@ class PageTest {
 
     @BeforeEach
     void bulkInsert() {
-        for (int i = 1; i <= 500; i++) {        // fori : for문
+        for (int i = 1; i <= 433; i++) {        // fori : for문
             PostEntity post = PostEntity.builder()
                     .title("제목" + i)
                     .writer("작성자" + i)

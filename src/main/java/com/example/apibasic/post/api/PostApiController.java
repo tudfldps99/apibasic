@@ -74,7 +74,7 @@ public class PostApiController {        /* 서빙 직원 */
 
         //List<PostEntity> list = postRepository.findAll();
         try {       // ctrl + alt + t
-            PostListResponseDTO listResponseDTO = postService.getList();
+            PostListResponseDTO listResponseDTO = postService.getList(pageRequestDTO);      // getList 에 파라미터 pageRequestDTO 추가하려면, PostService.java 의 getList 메소드 수정
 
             // 엔터티 리스트를 DTO 리스트로 변환해서 클라이언트에 응답 --> PostResponseDTO.java 에서 처리
             // 2023-01-16
