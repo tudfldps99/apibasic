@@ -7,6 +7,8 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Setter @Getter @ToString
 @NoArgsConstructor
@@ -30,6 +32,11 @@ public class PostEntity {       // Entity 에서 validation 하지 말기. valid
     private String content;     // 내용
 
 //    private List<String> hashTags;      // 해시태그 목록
+
+    // 2023-01-18) 연관관계. 게시물과 해시태그 (1대 다(M) 관계) ==> HashTag 테이블 생성 필요 (HashTagEntity.java)
+    // 양방향매핑으로
+    @OneToMany(mappedBy = "post")
+    private List<HashTagEntity> hashTags = new ArrayList<>();   // 해시태그 목록
 
     @CreationTimestamp
     private LocalDateTime createDate;   // 작성 시간        --> INSERT

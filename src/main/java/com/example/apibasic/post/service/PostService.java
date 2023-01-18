@@ -2,7 +2,9 @@
 package com.example.apibasic.post.service;
 
 import com.example.apibasic.post.dto.*;
+import com.example.apibasic.post.entity.HashTagEntity;
 import com.example.apibasic.post.entity.PostEntity;
+import com.example.apibasic.post.repository.HashTagRepository;
 import com.example.apibasic.post.repository.PostRepository;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
@@ -25,6 +27,8 @@ public class PostService {
 
     // service 가 repository 에 의존
     private final PostRepository postRepository;        // IoC (제어의 역전)
+
+    private final HashTagRepository hashTagRepository;      // 2023-01-18) HashTagRepository 추가
 
 //--------------------------------------
     // 목록 조회 중간처리
@@ -104,9 +108,29 @@ public class PostService {
 
         // entity 가 null 이면 IllegalArgumentException (save 메서드에 ctrl + 클릭하면 알 수 있음)
         // --> save 메서드의 예외처리가 필요함  : 79번째 줄
-        PostEntity savedPost = postRepository.save(entity);
+        PostEntity savedPost = postRepository.save(entity);     // 게시물 save
 
-         // 저장된 객체를 DTO 로 변환해서 반환
+        // 2023-01-18
+        // 1대 다 에서는 '1' 을 먼저 생성 된 후 '다' 가 생성됨
+        // hashTag 제외하고 save 되므로, hashTag 를 DB 에 save 해야 함
+        List<String> hashTags = createDTO.getHashTags();    // 해시태그 save
+                                                            // but, hashTags 가 HashTagEntity 가 아닌, String 형임. --> HashTagEntity 로 변환해줘야 함 : HashTagRepository.java 필요
+        // 방법) 해시태그 문자열 리스트에서 문자열들을 하나하나 추출(반복문)한 뒤, 해시태그 엔터티로 만들고 그 엔터티를 데이터베이스에 저장한다.
+    /*  // forEach 로 변경
+        for (String ht : hashTags) {                                // 1. 하나하나 추출 한 후
+            HashTagEntity tagEntity = HashTagEntity.builder()       // 2. 해시태그 엔터티로 만듦
+                    .tagName(ht)
+                    .build();
+
+            hashTagRepository.save(tagEntity);                      // 3. 그 엔터티를 DB 에 저장
+        }
+     */
+        // 위의 for 문을 forEach 로 변경
+        hashTags.stream().map(ht -> HashTagEntity.builder()
+                .tagName(ht)
+                .build()).forEach(hashTagRepository::save);
+
+        // 저장된 객체를 DTO 로 변환해서 반환
         return new PostResponseOneDTO(savedPost);
     }
 
