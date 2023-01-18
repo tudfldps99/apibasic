@@ -41,7 +41,7 @@ spring:
     hibernate:
       database: mysql     # 실제사용할 dbms 지정
       generate-ddl: true  # 각 DBMS에 맞는 고유 기능을 사용할 지의 여부
-      ddl-auto: update    # DDL문을 처리할 때 설정
+      ddl-auto: create    # DDL문을 처리할 때 설정
 
 
 # create : 매 실행마다 DDL 을 재실행 (drop -> create)

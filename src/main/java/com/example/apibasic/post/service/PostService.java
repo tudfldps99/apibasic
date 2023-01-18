@@ -14,7 +14,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -99,10 +101,10 @@ public class PostService {
     }
 */
     // 2023-01-17) JPA 연결하면서 생긴 오류 해결
+    @Transactional      // 2023-01-18) DML 쿼리가 여러개 동시에 나가는 상황에서 트랜잭션 처리
     public PostResponseOneDTO insert(final PostCreateDTO createDTO)     // final : DB로 넘어가기 전에 DTO 가 변경되는 것을 방지할 수 있음
         throws RuntimeException     // 예외처리. 컨트롤러에게 던져버림 (PostApiController.java / 193번째 줄)
     {
-
         // dto 를 entity 변환 작업
         final PostEntity entity = createDTO.toEntity();
 
@@ -116,19 +118,17 @@ public class PostService {
         List<String> hashTags = createDTO.getHashTags();    // 해시태그 save
                                                             // but, hashTags 가 HashTagEntity 가 아닌, String 형임. --> HashTagEntity 로 변환해줘야 함 : HashTagRepository.java 필요
         // 방법) 해시태그 문자열 리스트에서 문자열들을 하나하나 추출(반복문)한 뒤, 해시태그 엔터티로 만들고 그 엔터티를 데이터베이스에 저장한다.
-    /*  // forEach 로 변경
+        List<HashTagEntity> hashTagEntities = new ArrayList<>();
         for (String ht : hashTags) {                                // 1. 하나하나 추출 한 후
             HashTagEntity tagEntity = HashTagEntity.builder()       // 2. 해시태그 엔터티로 만듦
+                    .post(savedPost)        // 원본 게시물 정보 넣어줘야 함
                     .tagName(ht)
                     .build();
 
-            hashTagRepository.save(tagEntity);                      // 3. 그 엔터티를 DB 에 저장
+            HashTagEntity savedTag = hashTagRepository.save(tagEntity);     // 3. 그 엔터티를 DB 에 저장
+            hashTagEntities.add(savedTag);          // 트랜잭션이 아직 끝나지 않은 상태이므로, 하단의 return 문인 PostResponseDTO 에서 getHashTags() 를 하지 못하기 때문에  setter 를 이용하여 별도로 저장 필요
         }
-     */
-        // 위의 for 문을 forEach 로 변경
-        hashTags.stream().map(ht -> HashTagEntity.builder()
-                .tagName(ht)
-                .build()).forEach(hashTagRepository::save);
+        savedPost.setHashTags(hashTagEntities);
 
         // 저장된 객체를 DTO 로 변환해서 반환
         return new PostResponseOneDTO(savedPost);
